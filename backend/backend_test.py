@@ -4,8 +4,8 @@ import time
 import os
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from frontend .env
+load_dotenv('../frontend/.env')
 
 # Get the backend URL from environment variable
 BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL')
