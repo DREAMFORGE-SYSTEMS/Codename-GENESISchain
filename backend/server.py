@@ -325,6 +325,19 @@ async def process_data_input(data: Dict[str, Any] = Body(...)):
         "replications": len(images)
     }
 
+@app.get("/api/data-inputs")
+async def get_data_inputs():
+    """
+    Returns all data inputs with their generated content and self-replications.
+    """
+    data_inputs = await db.data_inputs.find().sort("timestamp", -1).to_list(length=100)
+    
+    # Convert ObjectId to string
+    for data in data_inputs:
+        data["_id"] = str(data["_id"])
+    
+    return {"data_inputs": data_inputs}
+
 @app.on_event("startup")
 async def startup_event():
     logger.info("Starting up GenesisChain API")
