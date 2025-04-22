@@ -214,33 +214,115 @@ async def get_transactions():
         tx["_id"] = str(tx["_id"])
     return {"transactions": transactions}
 
-# Self-replication mechanism (simplified version)
+# Functions for simulating AI content generation
+async def generate_image(prompt_hash: str) -> Dict[str, Any]:
+    """
+    Simulates AI image generation based on a hash.
+    In a full implementation, this would call an actual AI API.
+    """
+    # Use the hash to create deterministic but unique "AI-generated" content
+    seed = int(prompt_hash[:8], 16)  # Convert first 8 chars of hash to integer
+    
+    # Simulate different image properties based on the hash
+    width = 400 + (seed % 400)  # 400-800px width
+    height = 300 + (seed % 500)  # 300-800px height
+    style = ["abstract", "landscape", "portrait", "futuristic", "digital", "geometric"][seed % 6]
+    
+    return {
+        "image_id": f"img_{prompt_hash[:10]}",
+        "prompt_hash": prompt_hash,
+        "width": width,
+        "height": height,
+        "style": style,
+        "url": f"https://example.com/ai-images/{prompt_hash[:10]}.jpg",
+        "created_at": time.time()
+    }
+
+async def generate_audio(prompt_hash: str) -> Dict[str, Any]:
+    """
+    Simulates AI audio generation based on a hash.
+    In a full implementation, this would call an actual AI API.
+    """
+    # Use the hash to create deterministic but unique "AI-generated" content
+    seed = int(prompt_hash[:8], 16)  # Convert first 8 chars of hash to integer
+    
+    # Simulate different audio properties based on the hash
+    duration = 30 + (seed % 120)  # 30-150 seconds
+    genre = ["ambient", "electronic", "cinematic", "jazz", "rock", "classical"][seed % 6]
+    
+    return {
+        "audio_id": f"audio_{prompt_hash[:10]}",
+        "prompt_hash": prompt_hash,
+        "duration": duration,
+        "genre": genre,
+        "url": f"https://example.com/ai-audio/{prompt_hash[:10]}.mp3",
+        "created_at": time.time()
+    }
+
+# Self-replication mechanism
 @app.post("/api/data-input")
 async def process_data_input(data: Dict[str, Any] = Body(...)):
     """
-    This endpoint receives external data, hashes it, and stores it.
-    In a full implementation, this would trigger the AI content generation
-    and self-replication loop.
+    This endpoint receives external data, hashes it, generates AI content,
+    and implements the self-replication mechanism.
     """
     # Generate a hash of the input data
     data_string = json.dumps(data, sort_keys=True)
     data_hash = hashlib.sha256(data_string.encode()).hexdigest()
     
-    # Store the data and its hash
+    # Generate AI content based on the hash (simulated)
+    images = [await generate_image(data_hash + str(i)) for i in range(4)]
+    audio_tracks = [await generate_audio(data_hash + str(i)) for i in range(2)]
+    
+    # Store the data, hash, and generated content
     data_record = {
         "original_data": data,
         "hash": data_hash,
         "timestamp": time.time(),
-        "processed": False,
-        "data_id": str(uuid.uuid4())
+        "processed": True,
+        "data_id": str(uuid.uuid4()),
+        "generated_content": {
+            "images": images,
+            "audio": audio_tracks
+        }
     }
     
     await db.data_inputs.insert_one(data_record)
     
+    # Self-replication: Use the generated content as new input data
+    # This simulates how the system can feed its own outputs back as inputs
+    for img in images:
+        replication_data = {
+            "source_type": "image",
+            "source_id": img["image_id"],
+            "content": f"AI-generated image with style {img['style']}",
+            "timestamp": time.time()
+        }
+        
+        # Create a new hash from the AI-generated content
+        repl_data_string = json.dumps(replication_data, sort_keys=True)
+        repl_hash = hashlib.sha256(repl_data_string.encode()).hexdigest()
+        
+        repl_record = {
+            "original_data": replication_data,
+            "hash": repl_hash,
+            "timestamp": time.time(),
+            "processed": False,
+            "data_id": str(uuid.uuid4()),
+            "parent_data_id": data_record["data_id"]
+        }
+        
+        await db.data_inputs.insert_one(repl_record)
+    
     return {
         "message": "Data processed successfully",
         "hash": data_hash,
-        "data_id": data_record["data_id"]
+        "data_id": data_record["data_id"],
+        "generated_content": {
+            "images": len(images),
+            "audio": len(audio_tracks)
+        },
+        "replications": len(images)
     }
 
 @app.on_event("startup")
