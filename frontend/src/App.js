@@ -20,6 +20,7 @@ function App() {
   useEffect(() => {
     fetchBlockchain();
     fetchTransactions();
+    fetchDataInputs();
   }, []);
 
   const showNotification = (message, type = "success") => {
