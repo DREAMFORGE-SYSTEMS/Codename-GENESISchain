@@ -360,6 +360,68 @@ function App() {
                 <strong>4.</strong> The process self-replicates, creating new hashes and assets
               </p>
             </div>
+            
+            <div className="data-inputs-section">
+              <h3>Recent Data Inputs & Generated Content</h3>
+              <div className="data-inputs-list">
+                {dataInputs.length > 0 ? (
+                  dataInputs.map((data) => (
+                    <div key={data.data_id} className="data-input-card">
+                      <div className="data-input-header">
+                        <h4>{data.parent_data_id ? "Self-Replicated Data" : "User Input Data"}</h4>
+                        <span className="timestamp">
+                          {new Date(data.timestamp * 1000).toLocaleString()}
+                        </span>
+                      </div>
+                      
+                      <div className="data-input-details">
+                        <p>
+                          <strong>Hash:</strong>{" "}
+                          <span className="hash">{data.hash.substring(0, 16)}...</span>
+                        </p>
+                        {data.original_data && (
+                          <p>
+                            <strong>Content:</strong>{" "}
+                            <span className="data-content">
+                              {data.original_data.content ? 
+                                data.original_data.content.substring(0, 40) + (data.original_data.content.length > 40 ? "..." : "") :
+                                JSON.stringify(data.original_data).substring(0, 40) + "..."}
+                            </span>
+                          </p>
+                        )}
+                        
+                        {data.generated_content && (
+                          <div className="generated-content">
+                            <p><strong>Generated Content:</strong></p>
+                            <div className="content-stats">
+                              <div className="stat">
+                                <span className="stat-value">{data.generated_content.images.length}</span>
+                                <span className="stat-label">Images</span>
+                              </div>
+                              <div className="stat">
+                                <span className="stat-value">{data.generated_content.audio.length}</span>
+                                <span className="stat-label">Audio</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {data.parent_data_id && (
+                          <p className="replication-info">
+                            <strong>Parent:</strong>{" "}
+                            <span className="parent-id">{data.parent_data_id.substring(0, 8)}...</span>
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="empty-state">
+                    <p>No data inputs found. Submit data to start the self-replication process!</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
