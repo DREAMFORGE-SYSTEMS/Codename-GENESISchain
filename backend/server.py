@@ -146,25 +146,35 @@ async def mine():
     # Get the last block
     last_block = await get_last_block()
     
+    # Convert MongoDB ObjectId to string to make it JSON serializable
+    if '_id' in last_block:
+        last_block['_id'] = str(last_block['_id'])
+    
     # Calculate the proof of work
     last_proof = last_block['proof']
     proof = await proof_of_work(last_proof)
     
     # Create a new transaction to award the miner
-    blockchain.current_transactions.append(
-        Transaction(
-            sender="0",  # "0" signifies that this node has mined a new coin
-            recipient="miner-address",  # This would be the miner's address in a real implementation
-            amount=1.0
-        )
+    miner_transaction = Transaction(
+        sender="0",  # "0" signifies that this node has mined a new coin
+        recipient="miner-address",  # This would be the miner's address in a real implementation
+        amount=1.0
     )
+    
+    # Store miner transaction in database
+    await db.transactions.insert_one(miner_transaction.dict())
+    
+    # Add to current transactions
+    blockchain.current_transactions.append(miner_transaction)
     
     # Collect current transactions
     current_transactions = blockchain.current_transactions.copy()
     blockchain.current_transactions = []
     
-    # Create a new Block
-    previous_hash = hashlib.sha256(json.dumps(last_block, sort_keys=True).encode()).hexdigest()
+    # Create a new Block - first create a serializable version of last_block
+    # by removing ObjectId
+    clean_last_block = {k: v for k, v in last_block.items() if k != '_id'}
+    previous_hash = hashlib.sha256(json.dumps(clean_last_block, sort_keys=True).encode()).hexdigest()
     
     block = Block(
         index=last_block['index'] + 1,
@@ -178,7 +188,8 @@ async def mine():
     blockchain.current_transactions = []
     
     # Save the new block to database
-    await db.blocks.insert_one(block.dict())
+    block_dict = block.dict()
+    await db.blocks.insert_one(block_dict)
     
     # Also save all transactions as confirmed
     for transaction in current_transactions:
