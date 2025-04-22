@@ -112,7 +112,15 @@ function App() {
       if (response.ok) {
         const result = await response.json();
         setNewData("");
-        showNotification("Data processed successfully. Hash: " + result.hash.substring(0, 8) + "...");
+        // Display more detailed notification with generated content info
+        showNotification(
+          `Data processed successfully! Generated ${result.generated_content.images} images, ${result.generated_content.audio} audio tracks, and created ${result.replications} self-replications.`
+        );
+        
+        // Refresh data after a short delay to show new entries
+        setTimeout(() => {
+          fetchDataInputs();
+        }, 1000);
       } else {
         const errorData = await response.json();
         showNotification(`Error: ${errorData.detail || "Failed to process data"}`, "error");
@@ -122,6 +130,19 @@ function App() {
       showNotification("Failed to process data", "error");
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  // Fetch data inputs for the data tab
+  const fetchDataInputs = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/data-inputs`);
+      if (response.ok) {
+        const data = await response.json();
+        setDataInputs(data.data_inputs || []);
+      }
+    } catch (error) {
+      console.error("Error fetching data inputs:", error);
     }
   };
 
