@@ -50,6 +50,22 @@ logger = logging.getLogger(__name__)
 from blockchain.blockchain import Blockchain, Block, Transaction, SecurityLevel
 from blockchain.wallet import QuantumWallet, create_wallet, get_wallet_balance
 from blockchain.mining import mine_block, calculate_hash, calculate_proof_of_work, QuantumMiner
+from blockchain.genesis_security import GenesisSecurityManager, SecurityValidator, CircuitBreaker
+
+# Import NexusLayer modules
+from nexuslayer.bridge import BridgeManager, MessageType, SecurityGateway
+from nexuslayer.isolation import SecurityBulkhead, SecurityZone, IsolationLevel
+from nexuslayer.verification import VerificationGate, ProofValidator, ValidationError
+
+# Import DreamChain modules
+from dreamchain.core import DreamChain, Transaction as DreamTransaction, Block as DreamBlock, Account
+from dreamchain.contracts import SmartContract, TokenContract, ContractRegistry
+from dreamchain.apps import DApp, DAppRegistry
+
+# Import API routes
+from api.routes import api_router
+
+# Import quantum security
 from quantum_security import SecurityLevel, create_default_security_manager
 
 # API Models for request/response
