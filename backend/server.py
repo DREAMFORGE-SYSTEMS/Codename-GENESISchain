@@ -1,0 +1,276 @@
+from fastapi import FastAPI, HTTPException, Body, Depends, Request
+from fastapi.responses import JSONResponse
+from dotenv import load_dotenv
+from starlette.middleware.cors import CORSMiddleware
+from motor.motor_asyncio import AsyncIOMotorClient
+import uvicorn
+import os
+import logging
+from pathlib import Path
+import hashlib
+import json
+import time
+import uuid
+import asyncio
+from typing import List, Dict, Any, Optional, Union
+from pydantic import BaseModel, Field
+
+# /backend
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
+
+# MongoDB connection
+mongo_url = os.environ.get('MONGO_URL')
+db_name = os.environ.get('DB_NAME', 'genesischain')
+client = AsyncIOMotorClient(mongo_url)
+db = client[db_name]
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# Import our quantum-resistant blockchain modules after database setup
+from blockchain.blockchain import Blockchain, Block, Transaction, SecurityLevel
+from blockchain.wallet import QuantumWallet, create_wallet, get_wallet_balance
+from blockchain.mining import mine_block, calculate_hash, calculate_proof_of_work, QuantumMiner
+
+# API Models for request/response
+class TransactionRequest(BaseModel):
+    sender: str
+    recipient: str
+    amount: float
+    data: Optional[Dict[str, Any]] = None
+    transaction_type: str = "transfer"
+    fee: float = 0.0
+    
+class BlockResponse(BaseModel):
+    index: int
+    timestamp: float
+    transactions: List[Dict[str, Any]]
+    hash: str
+    previous_hash: str
+    merkle_root: str
+    nonce: int
+    difficulty: int
+    
+class WalletRequest(BaseModel):
+    name: Optional[str] = None
+    security_level: str = "STANDARD"
+    
+class WalletResponse(BaseModel):
+    id: str
+    name: str
+    address: str
+    public_keys: Dict[str, str]
+    created_at: float
+    
+class SecurityInfoResponse(BaseModel):
+    active_security_level: str
+    available_levels: List[str]
+    active_security_features: List[str]
+    quantum_resistance_status: Dict[str, Any]
+
+# Initialize our quantum-resistant blockchain
+genesis_chain = Blockchain(security_level=SecurityLevel.STANDARD)
+
+# In-memory wallet store (in production, this would be properly secured)
+wallets = {}
+
+# Initialize a miner for the blockchain
+quantum_miner = None
+
+# Store blockchain in database
+async def save_blockchain_state():
+    """Save the current blockchain state to MongoDB"""
+    chain_dict = genesis_chain.to_dict()
+    
+    # Store the blockchain state in the database
+    await db.blockchain_state.update_one(
+        {"_id": "current_state"},
+        {"$set": chain_dict},
+        upsert=True
+    )
+    logger.info(f"Blockchain state saved, length: {len(genesis_chain.chain)}")
+
+async def load_blockchain_state():
+    """Load blockchain state from MongoDB"""
+    global genesis_chain
+    
+    # Check if there's a saved state
+    state = await db.blockchain_state.find_one({"_id": "current_state"})
+    
+    if state:
+        # Rebuild the blockchain from the saved state
+        # Remove MongoDB _id field before reconstruction
+        del state["_id"]
+        genesis_chain = Blockchain.from_dict(state)
+        logger.info(f"Blockchain state loaded, length: {len(genesis_chain.chain)}")
+    else:
+        # No existing state, use the new chain
+        logger.info("No existing blockchain state found, using new chain")
+        await save_blockchain_state()
+
+# Routes for the quantum-resistant blockchain
+@app.get("/api")
+async def root():
+    return {
+        "message": "GenesisChain Quantum-Resistant Blockchain API",
+        "version": "1.0.0",
+        "chain_length": len(genesis_chain.chain),
+        "security_level": genesis_chain.security_manager.security_level.name
+    }
+
+@app.get("/api/chain")
+async def get_chain():
+    """Get the current blockchain"""
+    blocks = [block.to_dict() for block in genesis_chain.chain]
+    return {
+        "chain": blocks,
+        "length": len(blocks),
+        "security_level": genesis_chain.security_manager.security_level.name
+    }
+
+@app.get("/api/chain/block/{index}")
+async def get_block_by_index(index: int):
+    """Get a specific block by index"""
+    block = genesis_chain.get_block_by_index(index)
+    if not block:
+        raise HTTPException(status_code=404, detail="Block not found")
+    
+    return BlockResponse(**block.to_dict())
+
+@app.get("/api/chain/block/hash/{block_hash}")
+async def get_block_by_hash(block_hash: str):
+    """Get a specific block by hash"""
+    block = genesis_chain.get_block_by_hash(block_hash)
+    if not block:
+        raise HTTPException(status_code=404, detail="Block not found")
+    
+    return BlockResponse(**block.to_dict())
+
+@app.post("/api/transactions/new")
+async def new_transaction(transaction_request: TransactionRequest = Body(...)):
+    """Create a new transaction"""
+    
+    # Check if sending wallet exists
+    sender_wallet = wallets.get(transaction_request.sender)
+    if not sender_wallet:
+        raise HTTPException(status_code=404, detail="Sender wallet not found")
+    
+    # Create transaction
+    transaction = Transaction(
+        sender=sender_wallet.address,
+        recipient=transaction_request.recipient,
+        amount=transaction_request.amount,
+        data=transaction_request.data or {},
+        transaction_type=transaction_request.transaction_type,
+        fee=transaction_request.fee
+    )
+    
+    # Sign the transaction with the sender's wallet
+    transaction.sign(
+        {
+            "quantum_resistant": sender_wallet.key_pairs["quantum_resistant"].private_key
+        },
+        genesis_chain.security_manager
+    )
+    
+    # Add to blockchain's pending transactions
+    success = genesis_chain.add_transaction(transaction)
+    
+    if not success:
+        raise HTTPException(status_code=400, detail="Transaction verification failed")
+    
+    # Save current state after transaction added
+    await save_blockchain_state()
+    
+    return JSONResponse(
+        status_code=201,
+        content={
+            "message": f"Transaction will be added to a future block",
+            "transaction_id": transaction.id,
+            "pending_transactions": len(genesis_chain.pending_transactions)
+        }
+    )
+
+@app.post("/api/mine")
+async def mine_new_block(miner_address: str):
+    """Mine a new block with pending transactions"""
+    
+    # Check if miner wallet exists
+    if miner_address not in wallets:
+        raise HTTPException(status_code=404, detail="Miner wallet not found")
+    
+    miner_wallet = wallets[miner_address]
+    
+    # Mine a new block
+    new_block = genesis_chain.mine_pending_transactions(miner_wallet.address)
+    
+    if not new_block:
+        raise HTTPException(status_code=400, detail="Mining failed")
+    
+    # Save updated blockchain state
+    await save_blockchain_state()
+    
+    return {
+        "message": "New Block Forged",
+        "block": BlockResponse(**new_block.to_dict()),
+        "miner_reward": 1.0,  # Simplified reward amount
+        "transactions_processed": len(new_block.transactions)
+    }
+
+@app.get("/api/transactions")
+async def get_pending_transactions():
+    """Get all pending transactions"""
+    return {
+        "pending_transactions": [tx.to_dict() for tx in genesis_chain.pending_transactions],
+        "count": len(genesis_chain.pending_transactions)
+    }
+
+@app.get("/api/transactions/{address}")
+async def get_address_transactions(address: str):
+    """Get transaction history for an address"""
+    history = genesis_chain.get_transaction_history(address)
+    return {
+        "address": address,
+        "transactions": history,
+        "count": len(history)
+    }
+
+@app.get("/api/transaction/{transaction_id}")
+async def get_transaction(transaction_id: str):
+    """Get a specific transaction by ID"""
+    tx = genesis_chain.get_transaction_by_id(transaction_id)
+    if not tx:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    
+    return tx
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize the blockchain and load state on startup"""
+    logger.info("Starting up GenesisChain Quantum-Resistant API")
+    await load_blockchain_state()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Save blockchain state and cleanup on shutdown"""
+    logger.info("Shutting down GenesisChain API")
+    await save_blockchain_state()
+    client.close()
+
+if __name__ == "__main__":
+    uvicorn.run("server:app", host="0.0.0.0", port=8001, reload=True)
