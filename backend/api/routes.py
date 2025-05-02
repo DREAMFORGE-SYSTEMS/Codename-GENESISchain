@@ -20,6 +20,9 @@ import time
 # from dreamchain.core import DreamChain, Transaction as DreamTransaction, Block as DreamBlock, Account
 # from blockchain.genesis_security import GenesisSecurityManager, SecurityValidator, CircuitBreaker
 
+# Import the Forge router
+from api.forge_routes import forge_router
+
 # Create routers for each layer
 genesis_router = APIRouter(prefix="/api/genesis", tags=["GenesisChain"])
 nexus_router = APIRouter(prefix="/api/nexus", tags=["NexusLayer"])
