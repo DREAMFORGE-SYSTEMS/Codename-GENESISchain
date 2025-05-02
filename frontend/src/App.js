@@ -192,6 +192,7 @@ function App() {
 
     setIsLoading(true);
     try {
+      // Mining starts the blockchain if it's not already running
       const response = await fetch(`${BACKEND_URL}/api/mine?miner_address=${selectedWallet.id}`);
       
       if (response.ok) {
