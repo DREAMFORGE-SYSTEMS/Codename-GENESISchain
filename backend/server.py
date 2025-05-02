@@ -29,7 +29,14 @@ db_name = os.environ.get('DB_NAME', 'genesischain')
 client = AsyncIOMotorClient(mongo_url)
 db = client[db_name]
 
-app = FastAPI()
+# Import API routes
+from api.routes import api_router
+
+app = FastAPI(
+    title="GenesisChain + DreamChain API",
+    description="Three-Layer Blockchain Architecture with Quantum-Resistant Security",
+    version="1.0.0"
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,6 +45,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include our API routers
+app.include_router(api_router)
 
 # Configure logging
 logging.basicConfig(
