@@ -714,6 +714,27 @@ h3 {
 }
 
 /* Responsive */
+.security-tab-container, .forge-tab-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.forge-tab-container h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #7928ca, #ff0080);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.forge-tab-container .description {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+  color: #a8a8a8;
+}
+
 @media (max-width: 992px) {
   .security-status {
     flex-direction: column;
