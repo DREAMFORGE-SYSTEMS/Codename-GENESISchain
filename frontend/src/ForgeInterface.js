@@ -392,14 +392,13 @@ function ForgeInterface() {
           <div className="forge-status-container">
             <h3>Forge Core Status</h3>
             
-            {forgeStatus ? (
-              <div className="forge-status-details">
+            <div className="forge-status-details">
                 <div className="forge-status-card primary">
                   <h4>Quantum Forge Core</h4>
-                  <div className="forge-id">ID: {forgeStatus.forge_id}</div>
+                  <div className="forge-id">ID: {displayForgeStatus.forge_id}</div>
                   <div className="forge-status-indicator">
-                    <span className={`status-badge ${forgeStatus.active ? "active" : "inactive"}`}>
-                      {forgeStatus.active ? "ACTIVE" : "INACTIVE"}
+                    <span className={`status-badge ${displayForgeStatus.active ? "active" : "inactive"}`}>
+                      {displayForgeStatus.active ? "ACTIVE" : "INACTIVE"}
                     </span>
                   </div>
                   <div className="energy-meter">
@@ -407,11 +406,16 @@ function ForgeInterface() {
                     <div className="energy-bar-container">
                       <div 
                         className="energy-bar" 
-                        style={{ width: `${(forgeStatus.current_energy / forgeStatus.max_energy) * 100}%` }}
+                        style={{ width: `${(displayForgeStatus.current_energy / displayForgeStatus.max_energy) * 100}%` }}
                       ></div>
                     </div>
                     <div className="energy-value">
-                      {forgeStatus.current_energy.toFixed(2)} / {forgeStatus.max_energy.toFixed(2)}
+                      {typeof displayForgeStatus.current_energy === 'number' 
+                        ? displayForgeStatus.current_energy.toFixed(2) 
+                        : '0.00'} / 
+                      {typeof displayForgeStatus.max_energy === 'number' 
+                        ? displayForgeStatus.max_energy.toFixed(2)
+                        : '100.00'}
                     </div>
                   </div>
                 </div>
