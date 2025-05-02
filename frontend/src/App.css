@@ -1,4 +1,4 @@
-/* GenesisChain CSS */
+/* GenesisChain Quantum-Resistant Blockchain CSS */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap');
 
 :root {
@@ -15,6 +15,12 @@
   --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --header-font: 'Orbitron', sans-serif;
   --body-font: 'Inter', sans-serif;
+  --quantum-gradient: linear-gradient(135deg, #8338ec 0%, #ff006e 100%);
+  --standard-color: #3a86ff;
+  --high-color: #4cc9f0;
+  --very-high-color: #8338ec;
+  --quantum-color: #ff006e;
+  --paranoid-color: #fb5607;
 }
 
 * {
@@ -109,6 +115,11 @@ h2 {
   padding-bottom: 0.5rem;
 }
 
+h3 {
+  font-family: var(--header-font);
+  margin-bottom: 1rem;
+}
+
 /* Blockchain Explorer */
 .blocks-list {
   display: grid;
@@ -139,6 +150,7 @@ h2 {
   font-family: var(--header-font);
   color: var(--primary-color);
   font-weight: 600;
+  margin-bottom: 0;
 }
 
 .timestamp {
@@ -174,7 +186,8 @@ h2 {
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid var(--border-color);
@@ -258,19 +271,355 @@ h2 {
   font-weight: 500;
 }
 
-/* Data Input */
+/* Wallet Management */
+.wallets-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.wallet-columns {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.wallet-list-column,
+.wallet-create-column {
+  flex: 1;
+}
+
+.wallets-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.wallet-card {
+  background-color: var(--light-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.wallet-card:hover {
+  transform: translateY(-3px);
+}
+
+.wallet-card.selected {
+  border-left: 4px solid var(--primary-color);
+}
+
+.wallet-card h4 {
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.balance {
+  font-weight: 600;
+  color: var(--success-color);
+}
+
+.wallet-form {
+  background-color: var(--light-color);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.selected-wallet-details {
+  background-color: var(--light-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: var(--card-shadow);
+}
+
+.wallet-details-card {
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+/* Mining */
+.mining-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
 .description {
   margin-bottom: 1.5rem;
   color: #6c757d;
 }
 
-.data-form {
-  background-color: var(--light-color);
-  padding: 1.5rem;
-  border-radius: 8px;
-  margin-bottom: 2rem;
+.mining-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
 }
 
+.mining-wallet-select {
+  width: 100%;
+}
+
+.wallet-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.wallet-option {
+  background-color: var(--light-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wallet-option:hover {
+  background-color: #e9ecef;
+}
+
+.wallet-option.selected {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.mining-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 300px;
+}
+
+.mining-button:hover {
+  background-color: #2a6fc9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.mining-button:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+}
+
+/* Security Dashboard */
+.security-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.security-status {
+  display: flex;
+  gap: 2rem;
+}
+
+.security-level-indicator,
+.security-features {
+  flex: 1;
+  background-color: var(--light-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: var(--card-shadow);
+}
+
+.security-level {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  margin: 1rem 0;
+  border-radius: 8px;
+  color: white;
+  font-family: var(--header-font);
+  font-size: 1.5rem;
+  font-weight: 600;
+  background: var(--bg-gradient);
+}
+
+.security-level.STANDARD {
+  background: linear-gradient(135deg, var(--standard-color) 0%, #2a6fc9 100%);
+}
+
+.security-level.HIGH {
+  background: linear-gradient(135deg, var(--high-color) 0%, #3a86ff 100%);
+}
+
+.security-level.VERY_HIGH {
+  background: linear-gradient(135deg, var(--very-high-color) 0%, #7209b7 100%);
+}
+
+.security-level.QUANTUM {
+  background: linear-gradient(135deg, var(--quantum-color) 0%, #8338ec 100%);
+}
+
+.security-level.PARANOID {
+  background: linear-gradient(135deg, var(--paranoid-color) 0%, #f72585 100%);
+}
+
+.security-level-controls {
+  margin-top: 1.5rem;
+}
+
+.security-level-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.security-level-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: all 0.2s ease;
+}
+
+.security-level-button:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.security-level-button.active {
+  opacity: 1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.security-level-button.STANDARD {
+  background-color: var(--standard-color);
+}
+
+.security-level-button.HIGH {
+  background-color: var(--high-color);
+}
+
+.security-level-button.VERY_HIGH {
+  background-color: var(--very-high-color);
+}
+
+.security-level-button.QUANTUM {
+  background-color: var(--quantum-color);
+}
+
+.security-level-button.PARANOID {
+  background-color: var(--paranoid-color);
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+}
+
+.security-feature {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+}
+
+.feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  margin-right: 0.75rem;
+}
+
+.quantum-security-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.quantum-info-card {
+  background-color: var(--light-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.quantum-status {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--quantum-gradient);
+  color: white;
+  font-family: var(--header-font);
+  font-weight: 600;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.quantum-algorithms,
+.security-strength {
+  flex: 1;
+  min-width: 200px;
+}
+
+.quantum-algorithms ul {
+  list-style: none;
+  padding: 0;
+}
+
+.quantum-algorithms li {
+  background-color: #f1f1f1;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.security-strength p {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* Info Box */
 .info-box {
   background-color: var(--light-color);
   padding: 1.5rem;
@@ -286,137 +635,6 @@ h2 {
 
 .info-box p {
   margin-bottom: 0.5rem;
-}
-
-/* Data inputs section */
-.data-inputs-section {
-  margin-top: 2rem;
-}
-
-.data-inputs-section h3 {
-  margin-bottom: 1rem;
-}
-
-.data-inputs-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-}
-
-.data-input-card {
-  background-color: var(--light-color);
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: var(--card-shadow);
-  transition: transform 0.3s ease;
-}
-
-.data-input-card:hover {
-  transform: translateY(-5px);
-}
-
-.data-input-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.data-input-header h4 {
-  font-family: var(--header-font);
-  color: var(--secondary-color);
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.data-input-details {
-  font-size: 0.9rem;
-}
-
-.data-content {
-  display: inline-block;
-  margin-top: 0.25rem;
-  font-family: monospace;
-  background-color: #f1f1f1;
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
-  word-break: break-all;
-}
-
-.generated-content {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-color);
-}
-
-.content-stats {
-  display: flex;
-  gap: 1rem;
-  margin-top: 0.5rem;
-}
-
-.stat {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  text-align: center;
-  min-width: 80px;
-}
-
-.stat-value {
-  display: block;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--secondary-color);
-}
-
-.stat-label {
-  display: block;
-  font-size: 0.8rem;
-  color: #6c757d;
-}
-
-.replication-info {
-  margin-top: 1rem;
-  padding-top: 0.5rem;
-  border-top: 1px dashed var(--border-color);
-}
-
-.parent-id {
-  font-family: monospace;
-  background-color: #f1f1f1;
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
-}
-
-/* Mining */
-.mining-controls {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.mining-button {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 1rem 2rem;
-  font-size: 1.2rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.mining-button:hover {
-  background-color: #2a6fc9;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-}
-
-.mining-button:disabled {
-  background-color: #a0a0a0;
-  cursor: not-allowed;
 }
 
 /* Notifications */
@@ -471,6 +689,21 @@ h2 {
 }
 
 /* Responsive */
+@media (max-width: 992px) {
+  .security-status {
+    flex-direction: column;
+  }
+  
+  .quantum-info-card {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .wallet-columns {
+    flex-direction: column;
+  }
+}
+
 @media (max-width: 768px) {
   .tabs {
     flex-wrap: wrap;
@@ -503,5 +736,9 @@ h2 {
   
   .logo-container h1 {
     font-size: 2rem;
+  }
+  
+  .mining-button {
+    width: 100%;
   }
 }
