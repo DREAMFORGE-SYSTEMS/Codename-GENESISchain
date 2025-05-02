@@ -637,12 +637,12 @@ async def load_wallets_from_db():
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize the blockchain and load data on startup"""
+    """Initialize the three-layer blockchain architecture on startup"""
     global quantum_miner
     
-    logger.info("Starting up GenesisChain Quantum-Resistant API")
+    logger.info("Starting up Three-Layer Blockchain Architecture API")
     
-    # Load blockchain state
+    # Load GenesisChain state
     await load_blockchain_state()
     
     # Load wallets
@@ -660,7 +660,17 @@ async def startup_event():
     miner_address = wallets[first_wallet_id].address
     quantum_miner = QuantumMiner(miner_address)
     
-    logger.info(f"Initialization complete. Chain length: {len(genesis_chain.chain)}")
+    # Initialize NexusLayer connections
+    initialize_nexus_layer()
+    
+    # Initialize DreamChain
+    initialize_dream_chain()
+    
+    # Load cross-layer state
+    await load_cross_layer_state()
+    
+    logger.info(f"Initialization complete. GenesisChain length: {len(genesis_chain.chain)}")
+    logger.info("Three-layer blockchain architecture is ready")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
