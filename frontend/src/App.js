@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "./App.css";
+import ThreeLayerArchitecture from "./ThreeLayerArchitecture";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -21,7 +22,7 @@ function App() {
     security_level: "STANDARD"
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("blockchain");
+  const [activeTab, setActiveTab] = useState("architecture");
   const [notification, setNotification] = useState(null);
 
   useEffect(() => {
@@ -245,12 +246,18 @@ function App() {
       
       <header className="header">
         <div className="logo-container">
-          <h1>GenesisChain</h1>
-          <p className="tagline">Quantum-Resistant Blockchain with Advanced Security</p>
+          <h1>GenesisChain + DreamChain</h1>
+          <p className="tagline">Three-Layer Quantum-Resistant Blockchain Architecture</p>
         </div>
       </header>
 
       <nav className="tabs">
+        <button 
+          className={activeTab === "architecture" ? "active" : ""} 
+          onClick={() => setActiveTab("architecture")}
+        >
+          Three-Layer Architecture
+        </button>
         <button 
           className={activeTab === "blockchain" ? "active" : ""} 
           onClick={() => setActiveTab("blockchain")}
@@ -284,6 +291,10 @@ function App() {
       </nav>
 
       <main className="content">
+        {activeTab === "architecture" && (
+          <ThreeLayerArchitecture />
+        )}
+
         {activeTab === "blockchain" && (
           <div className="blockchain-container">
             <h2>Blockchain Explorer</h2>
@@ -693,7 +704,7 @@ function App() {
       </main>
 
       <footer className="footer">
-        <p>GenesisChain - Quantum-Resistant Blockchain &copy; 2025</p>
+        <p>GenesisChain + DreamChain - Three-Layer Quantum-Resistant Blockchain Architecture &copy; 2025</p>
       </footer>
     </div>
   );
