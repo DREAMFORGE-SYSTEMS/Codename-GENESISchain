@@ -48,4 +48,5 @@ __all__ = [
     'generate_secure_seed',
     'SecurityLevel',
     'SecurityLayerManager',
+    'create_default_security_manager',
 ]
