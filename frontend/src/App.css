@@ -765,6 +765,22 @@ h3 {
   color: #a8a8a8;
 }
 
+/* Three-Layer Architecture */
+.three-layer-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.colored-dream {
+  color: var(--accent-color);
+  text-shadow: 0 0 10px rgba(255, 0, 128, 0.7), 0 0 20px rgba(255, 0, 128, 0.4);
+}
+
+.colored-genesis {
+  color: var(--paranoid-color);
+  text-shadow: 0 0 10px rgba(251, 86, 7, 0.7), 0 0 20px rgba(251, 86, 7, 0.4);
+}
+
 @media (max-width: 992px) {
   .security-status {
     flex-direction: column;
