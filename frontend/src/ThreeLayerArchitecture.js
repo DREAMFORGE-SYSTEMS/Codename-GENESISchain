@@ -144,7 +144,7 @@ function ThreeLayerArchitecture() {
 
       <div className="layers-visualization">
         <div className="layer dream-layer">
-          <h2>DreamChain</h2>
+          <h2><span className="colored-dream">Dream</span>Chain</h2>
           <div className="layer-description">
             <p>Application Layer for user-friendly features and high throughput</p>
           </div>
