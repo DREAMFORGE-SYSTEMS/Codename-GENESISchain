@@ -438,11 +438,13 @@ h3 {
   margin-top: 20px;
   transition: all 0.3s ease;
   position: relative;
+  box-shadow: 0 0 10px rgba(35, 164, 85, 0.5), 0 0 20px rgba(0, 206, 27, 0.2);
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 .mining-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 15px rgba(0, 206, 27, 0.3);
+  box-shadow: 0 0 15px rgba(35, 164, 85, 0.7), 0 0 30px rgba(0, 206, 27, 0.3);
 }
 
 .button-tooltip {
