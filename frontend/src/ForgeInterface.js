@@ -325,6 +325,28 @@ function ForgeInterface() {
     }
   };
 
+  // Initialize with default values if data hasn't loaded yet
+  const defaultForgeStatus = {
+    forge_id: "Loading...",
+    current_energy: 0,
+    max_energy: 100,
+    stability: 0,
+    efficiency: 0,
+    active: false,
+    uptime: 0,
+    layer_distribution: {
+      GenesisChain: 0,
+      NexusLayer: 0,
+      DreamChain: 0
+    },
+    alert_count: 0,
+    latest_alerts: [],
+    status_message: "Initializing Forge interface..."
+  };
+
+  // Use default values until real data loads
+  const displayForgeStatus = forgeStatus || defaultForgeStatus;
+
   return (
     <div className="forge-interface">
       {notification && (
