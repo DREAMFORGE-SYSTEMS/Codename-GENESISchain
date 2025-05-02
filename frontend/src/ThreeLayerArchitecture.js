@@ -98,7 +98,7 @@ function ThreeLayerArchitecture() {
 
   return (
     <div className="three-layer-container">
-      <h1>Three-Layer Blockchain Architecture</h1>
+      <h1 className="architecture-title">Three-Layer Blockchain Architecture</h1>
       <p className="architecture-description">
         A quantum-resistant blockchain architecture with three specialized layers for security, communication, and application functionality.
       </p>
