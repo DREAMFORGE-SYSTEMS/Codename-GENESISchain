@@ -160,6 +160,172 @@ async def load_blockchain_state():
         logger.info("No existing blockchain state found, using new chain")
         await save_blockchain_state()
 
+def initialize_nexus_layer():
+    """Initialize the NexusLayer for cross-layer communication"""
+    global bridge_manager, security_bulkhead, verification_gate
+    
+    # Create security zones
+    genesis_zone = security_bulkhead.create_zone(
+        name="genesis_zone",
+        description="GenesisChain security zone"
+    )
+    
+    dream_zone = security_bulkhead.create_zone(
+        name="dream_zone",
+        description="DreamChain security zone"
+    )
+    
+    nexus_zone = security_bulkhead.create_zone(
+        name="nexus_zone",
+        description="NexusLayer security zone"
+    )
+    
+    # Connect zones through the bulkhead
+    security_bulkhead.connect_zones(genesis_zone.zone_id, nexus_zone.zone_id)
+    security_bulkhead.connect_zones(nexus_zone.zone_id, dream_zone.zone_id)
+    
+    # Register verification operations
+    verification_gate.register_operation_handler(
+        "transaction_validation",
+        handle_transaction_validation
+    )
+    
+    verification_gate.register_operation_handler(
+        "block_validation",
+        handle_block_validation
+    )
+    
+    logger.info("NexusLayer initialized with security zones and verification gates")
+    
+def handle_transaction_validation(operation_data, proof):
+    """Handle transaction validation operations through verification gate"""
+    # This is a simplified implementation
+    # In a real system, this would perform actual validation
+    
+    # Get the transaction from DreamChain
+    tx_id = operation_data.get("transaction_id")
+    
+    # Simulate validation from GenesisChain
+    validation_result = {
+        "valid": True,
+        "transaction_id": tx_id,
+        "timestamp": time.time()
+    }
+    
+    return validation_result
+    
+def handle_block_validation(operation_data, proof):
+    """Handle block validation operations through verification gate"""
+    # This is a simplified implementation
+    # In a real system, this would perform actual validation
+    
+    # Get the block from DreamChain
+    block_id = operation_data.get("block_id")
+    
+    # Simulate validation from GenesisChain
+    validation_result = {
+        "valid": True,
+        "block_id": block_id,
+        "timestamp": time.time(),
+        "verified_transactions": operation_data.get("transaction_ids", [])
+    }
+    
+    return validation_result
+
+def initialize_dream_chain():
+    """Initialize the DreamChain application layer"""
+    global dream_chain
+    
+    # Initialize bridge to lower layers
+    dream_chain.initialize_bridge(bridge_manager, verification_gate)
+    
+    # Create a default DreamChain account if none exist
+    if wallets:
+        first_wallet_id = next(iter(wallets))
+        wallet = wallets[first_wallet_id]
+        
+        dream_account = dream_chain.create_account(
+            address=wallet.address,
+            name=wallet.name
+        )
+        
+        logger.info(f"Created default DreamChain account: {dream_account.account_id}")
+    
+    logger.info("DreamChain initialized with bridge connection to NexusLayer")
+    
+async def load_cross_layer_state():
+    """Load and initialize cross-layer state from the database"""
+    # Check if there's a saved NexusLayer state
+    nexus_state = await db.nexuslayer_state.find_one({"_id": "current_state"})
+    
+    if nexus_state:
+        logger.info("NexusLayer state loaded from database")
+        # In a real implementation, this would reconstruct the NexusLayer state
+    else:
+        logger.info("No existing NexusLayer state found")
+        
+    # Check if there's a saved DreamChain state
+    dream_state = await db.dreamchain_state.find_one({"_id": "current_state"})
+    
+    if dream_state:
+        logger.info("DreamChain state loaded from database")
+        # In a real implementation, this would reconstruct the DreamChain state
+    else:
+        logger.info("No existing DreamChain state found")
+        
+    # Initialize cross-layer connections
+    bridge_manager.register_message_handler(
+        MessageType.SECURITY_VALIDATION,
+        handle_security_validation_message
+    )
+    
+    bridge_manager.register_message_handler(
+        MessageType.TRANSACTION_VALIDATE,
+        handle_transaction_validate_message
+    )
+    
+    logger.info("Cross-layer state and connections initialized")
+    
+def handle_security_validation_message(message):
+    """Handle security validation messages between layers"""
+    # This is a simplified implementation
+    # In a real system, this would perform actual validation through GenesisChain
+    
+    source = message.get("source")
+    destination = message.get("destination")
+    data = message.get("data", {})
+    
+    logger.info(f"Security validation message from {source} to {destination}")
+    
+    return {
+        "status": "success",
+        "timestamp": time.time()
+    }
+    
+def handle_transaction_validate_message(message):
+    """Handle transaction validation messages between layers"""
+    # This is a simplified implementation
+    # In a real system, this would perform actual validation through GenesisChain
+    
+    source = message.get("source")
+    destination = message.get("destination")
+    data = message.get("data", {})
+    
+    logger.info(f"Transaction validation message from {source} to {destination}")
+    
+    # Simulate validation result
+    validation_result = {
+        "valid": True,
+        "transaction_id": data.get("transaction_id"),
+        "timestamp": time.time()
+    }
+    
+    return {
+        "status": "success",
+        "result": validation_result,
+        "timestamp": time.time()
+    }
+
 # Routes for the quantum-resistant blockchain
 @app.get("/api")
 async def root():
