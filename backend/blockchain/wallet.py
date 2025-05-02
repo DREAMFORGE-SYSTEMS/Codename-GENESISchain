@@ -18,7 +18,7 @@ import uuid
 from typing import Dict, List, Any, Optional, Tuple
 
 # Import the quantum security modules
-from ..quantum_security import (
+from quantum_security import (
     QuantumResistantKeyPair,
     generate_keypair,
     sign_message,
