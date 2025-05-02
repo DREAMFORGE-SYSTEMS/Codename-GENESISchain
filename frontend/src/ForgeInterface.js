@@ -476,19 +476,24 @@ function ForgeInterface() {
                   </div>
                 </div>
                 
-                {forgeStatus.latest_alerts.length > 0 && (
+                {(displayForgeStatus.latest_alerts || []).length > 0 ? (
                   <div className="forge-alerts">
                     <h4>Latest Alerts</h4>
                     <ul className="alert-list">
-                      {forgeStatus.latest_alerts.map((alert, index) => (
-                        <li key={index} className={`alert-item ${alert.severity.toLowerCase()}`}>
+                      {displayForgeStatus.latest_alerts.map((alert, index) => (
+                        <li key={index} className={`alert-item ${(alert.severity || 'low').toLowerCase()}`}>
                           <span className="alert-time">
-                            {new Date(alert.timestamp * 1000).toLocaleTimeString()}
+                            {new Date((alert.timestamp || 0) * 1000).toLocaleTimeString()}
                           </span>
-                          <span className="alert-message">{alert.message}</span>
+                          <span className="alert-message">{alert.message || 'Unknown alert'}</span>
                         </li>
                       ))}
                     </ul>
+                  </div>
+                ) : (
+                  <div className="forge-alerts empty-alerts">
+                    <h4>Latest Alerts</h4>
+                    <p>No active alerts at this time.</p>
                   </div>
                 )}
                 
