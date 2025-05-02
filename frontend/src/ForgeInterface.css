@@ -840,17 +840,27 @@
 }
 
 /* Empty States */
-.empty-state {
+.empty-state, .empty-distribution, .empty-alerts {
   background: rgba(35, 35, 50, 0.4);
   border-radius: 8px;
-  padding: 30px;
+  padding: 20px;
   text-align: center;
   border: 1px dashed #444;
 }
 
-.empty-state p {
+.empty-state p, .empty-distribution p, .empty-alerts p {
   color: #999;
   font-size: 1rem;
+}
+
+.empty-distribution {
+  padding: 15px;
+  margin-top: 10px;
+}
+
+.empty-alerts {
+  padding: 15px;
+  margin-top: 10px;
 }
 
 /* Loading States */
