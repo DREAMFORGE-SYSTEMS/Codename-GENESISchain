@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import ThreeLayerArchitecture from "./ThreeLayerArchitecture";
+import ForgeInterface from "./ForgeInterface";
+import "./ForgeInterface.css";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
