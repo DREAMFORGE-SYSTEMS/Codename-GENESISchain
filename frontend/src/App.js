@@ -712,7 +712,13 @@ function App() {
         )}
         
         {activeTab === "forge" && (
-          <ForgeInterface />
+          <div className="forge-tab-container">
+            <h2>THE FORGE</h2>
+            <p className="description">
+              Quantum Energy Core & Asset Management System for the blockchain.
+            </p>
+            <ForgeInterface />
+          </div>
         )}
       </main>
 
