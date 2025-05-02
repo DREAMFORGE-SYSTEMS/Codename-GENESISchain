@@ -104,8 +104,24 @@ class SecurityInfoResponse(BaseModel):
     active_security_features: List[str]
     quantum_resistance_status: Dict[str, Any]
 
-# Initialize our quantum-resistant blockchain
+# Initialize our three-layer architecture
+# Layer 1: GenesisChain (foundation layer)
 genesis_chain = Blockchain(security_level=SecurityLevel.STANDARD)
+genesis_security = GenesisSecurityManager(security_level=SecurityLevel.STANDARD)
+
+# Layer 2: NexusLayer (intermediary/bridge layer)
+bridge_manager = BridgeManager(security_level=SecurityLevel.STANDARD)
+security_bulkhead = SecurityBulkhead(security_level=SecurityLevel.STANDARD)
+verification_gate = VerificationGate(
+    name="main_verification_gate",
+    description="Main verification gate for cross-layer operations",
+    security_level=SecurityLevel.STANDARD
+)
+
+# Layer 3: DreamChain (application layer)
+dream_chain = DreamChain(name="DreamChain")
+contract_registry = ContractRegistry()
+dapp_registry = DAppRegistry()
 
 # In-memory wallet store (in production, this would be properly secured)
 wallets = {}
