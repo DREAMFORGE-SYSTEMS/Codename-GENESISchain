@@ -35,8 +35,8 @@
 
 body {
   font-family: var(--body-font);
-  background-color: #f0f2f5;
-  color: var(--dark-color);
+  background: var(--dark-bg-gradient);
+  color: #e0e0e0;
   line-height: 1.6;
 }
 
