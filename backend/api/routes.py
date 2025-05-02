@@ -427,8 +427,36 @@ async def get_cross_layer_metrics():
     }
 
 
+# Root level routes
+@APIRouter(prefix="/api", tags=["Root"])
+def get_root_router():
+    root_router = APIRouter()
+    
+    @root_router.post("/mine")
+    async def mine_block(miner_address: str):
+        """Mine a new block on the GenesisChain"""
+        # This would normally interact with the actual blockchain
+        # For now we'll return a simulated response
+        return {
+            "success": True,
+            "message": "Block mined successfully",
+            "block": {
+                "index": 1,
+                "timestamp": time.time(),
+                "transactions": [],
+                "previous_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+                "hash": "000a1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1",
+                "nonce": 12345,
+                "miner": miner_address,
+                "reward": 50.0
+            }
+        }
+    
+    return root_router
+
 # Combine all routers
 api_router = APIRouter()
+api_router.include_router(get_root_router())
 api_router.include_router(genesis_router)
 api_router.include_router(nexus_router)
 api_router.include_router(dream_router)
