@@ -72,9 +72,6 @@ from dreamchain.core import DreamChain, Transaction as DreamTransaction, Block a
 from dreamchain.contracts import SmartContract, TokenContract, ContractRegistry
 from dreamchain.apps import DApp, DAppRegistry
 
-# Import API routes
-from api.routes import api_router
-
 # Import quantum security
 from quantum_security import SecurityLevel, create_default_security_manager
 
