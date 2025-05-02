@@ -85,15 +85,17 @@
 }
 
 .forge-status-card {
-  background: rgba(40, 40, 60, 0.6);
+  background: rgba(30, 30, 45, 0.7);
   border-radius: 10px;
   padding: 20px;
-  border: 1px solid #333;
+  border: 1px solid #444;
+  box-shadow: var(--neon-glow);
 }
 
 .forge-status-card.primary {
-  background: linear-gradient(135deg, rgba(30, 30, 45, 0.8), rgba(40, 40, 60, 0.8));
-  border: 1px solid #444;
+  background: linear-gradient(135deg, rgba(25, 25, 35, 0.8), rgba(35, 35, 50, 0.8));
+  border: 1px solid #555;
+  box-shadow: var(--secondary-neon-glow);
 }
 
 .forge-status-card h4 {
