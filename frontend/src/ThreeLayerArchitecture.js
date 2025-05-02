@@ -206,7 +206,7 @@ function ThreeLayerArchitecture() {
         </div>
 
         <div className="layer genesis-layer">
-          <h2>GenesisChain</h2>
+          <h2><span className="colored-genesis">Genesis</span>Chain</h2>
           <div className="layer-description">
             <p>Foundation Layer with quantum-resistant security and consensus</p>
           </div>
