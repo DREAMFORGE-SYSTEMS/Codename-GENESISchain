@@ -500,13 +500,10 @@ function ForgeInterface() {
                 <div className="forge-status-message">
                   <div className="message-box">
                     <h4>Status Message</h4>
-                    <p>{forgeStatus.status_message}</p>
+                    <p>{displayForgeStatus.status_message || 'Quantum Forge is initializing...'}</p>
                   </div>
                 </div>
               </div>
-            ) : (
-              <div className="loading-state">Loading Forge status...</div>
-            )}
           </div>
         )}
         
