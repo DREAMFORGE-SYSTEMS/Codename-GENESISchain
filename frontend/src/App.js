@@ -601,8 +601,12 @@ function App() {
                 onClick={handleMining} 
                 disabled={isLoading || !selectedWallet}
                 className="mining-button"
+                title="Mining initiates the blockchain. Click to mine a new block."
               >
                 {isLoading ? "Mining in progress..." : "Mine New Block"}
+                <div className="button-tooltip">
+                  Select a wallet first, then click to start the blockchain and mine a block.
+                </div>
               </button>
             </div>
             
