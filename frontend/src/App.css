@@ -87,18 +87,21 @@ body {
   font-family: var(--body-font);
   font-size: 1rem;
   font-weight: 500;
-  color: var(--dark-color);
+  color: #e0e0e0;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .tabs button:hover {
   color: var(--primary-color);
+  text-shadow: var(--neon-glow);
 }
 
 .tabs button.active {
   color: var(--primary-color);
   border-bottom: 3px solid var(--primary-color);
+  text-shadow: var(--neon-glow);
+  box-shadow: 0 4px 8px rgba(58, 134, 255, 0.2);
 }
 
 /* Content Sections */
