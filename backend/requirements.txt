@@ -19,3 +19,11 @@ numpy>=1.26.0
 python-multipart>=0.0.9
 jq>=1.6.0
 typer>=0.9.0
+# Post-quantum cryptography libraries
+pyoqs>=0.7.2  # Open Quantum Safe library
+pqcrypto>=0.1.3  # Python bindings for several post-quantum cryptographic algorithms
+# Advanced cryptography
+pysodium>=0.7.13  # Python bindings for libsodium
+falcon-pyquantum>=0.1.0  # Falcon signature scheme implementation
+kyber-py>=0.2.0  # Kyber key encapsulation implementation
+zk-snarks>=0.1.0  # Zero-knowledge proofs
