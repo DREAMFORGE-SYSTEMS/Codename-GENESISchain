@@ -709,6 +709,10 @@ function App() {
             </div>
           </div>
         )}
+        
+        {activeTab === "forge" && (
+          <ForgeInterface />
+        )}
       </main>
 
       <footer className="footer">
