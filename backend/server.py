@@ -467,15 +467,21 @@ async def startup_event():
 @app.on_event("shutdown")
 async def shutdown_db_client():
     """Clean up on shutdown"""
-    # Save final blockchain state
-    await save_blockchain_state()
-    
     # Stop the miner if running
     if quantum_miner and quantum_miner.running:
         quantum_miner.stop_mining()
     
-    # Close the database connection
-    client.close()
+    try:
+        # Save final blockchain state
+        await save_blockchain_state()
+    except Exception as e:
+        logger.error(f"Error saving blockchain state on shutdown: {str(e)}")
+    
+    # Close the database connection - do this last
+    try:
+        client.close()
+    except Exception as e:
+        logger.error(f"Error closing database connection: {str(e)}")
     
     logger.info("Shutdown complete")
 
