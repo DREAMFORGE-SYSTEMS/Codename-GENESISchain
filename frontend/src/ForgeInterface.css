@@ -380,6 +380,8 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: var(--accent-neon-glow);
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 .generate-button:hover,
@@ -387,7 +389,7 @@
 .create-button:hover,
 .apply-recommendations-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(121, 40, 202, 0.3);
+  box-shadow: 0 0 15px rgba(121, 40, 202, 0.7), 0 0 30px rgba(255, 0, 128, 0.3);
 }
 
 .terminate-button {
