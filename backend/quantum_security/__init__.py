@@ -31,6 +31,7 @@ from .quantum_entropy import (
 from .security_layers import (
     SecurityLevel,
     SecurityLayerManager,
+    create_default_security_manager,
 )
 
 __all__ = [
