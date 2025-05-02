@@ -17,7 +17,7 @@ import time
 from typing import Dict, Any, Optional, List, Tuple
 
 # Import quantum security for enhanced entropy
-from ..quantum_security import (
+from quantum_security import (
     QuantumRandomNumberGenerator,
     generate_secure_seed
 )
