@@ -259,6 +259,221 @@ async def get_transaction(transaction_id: str):
     
     return tx
 
+# Wallet Management API
+@app.post("/api/wallets/create")
+async def create_new_wallet(wallet_request: WalletRequest = Body(...)):
+    """Create a new quantum-resistant wallet"""
+    
+    # Map string security level to enum
+    security_level_map = {
+        "STANDARD": SecurityLevel.STANDARD,
+        "HIGH": SecurityLevel.HIGH,
+        "VERY_HIGH": SecurityLevel.VERY_HIGH,
+        "QUANTUM": SecurityLevel.QUANTUM,
+        "PARANOID": SecurityLevel.PARANOID
+    }
+    
+    security_level = security_level_map.get(
+        wallet_request.security_level, 
+        SecurityLevel.STANDARD
+    )
+    
+    # Create the wallet
+    wallet = create_wallet(wallet_request.name, security_level)
+    
+    # Store in our in-memory wallet store
+    wallets[wallet.id] = wallet
+    
+    # Also store in database for persistence
+    await db.wallets.insert_one(wallet.to_dict(include_private_keys=True))
+    
+    # Return wallet info without private keys
+    return WalletResponse(
+        id=wallet.id,
+        name=wallet.name,
+        address=wallet.address,
+        public_keys=wallet.to_dict()["public_keys"],
+        created_at=wallet.created_at
+    )
+
+@app.get("/api/wallets")
+async def list_wallets():
+    """List all wallets"""
+    wallet_list = []
+    
+    for wallet_id, wallet in wallets.items():
+        wallet_list.append({
+            "id": wallet.id,
+            "name": wallet.name,
+            "address": wallet.address,
+            "created_at": wallet.created_at,
+            "balance": genesis_chain.get_balance(wallet.address)
+        })
+    
+    return {"wallets": wallet_list, "count": len(wallet_list)}
+
+@app.get("/api/wallets/{wallet_id}")
+async def get_wallet(wallet_id: str):
+    """Get wallet details"""
+    if wallet_id not in wallets:
+        raise HTTPException(status_code=404, detail="Wallet not found")
+    
+    wallet = wallets[wallet_id]
+    
+    return {
+        "id": wallet.id,
+        "name": wallet.name,
+        "address": wallet.address,
+        "public_keys": wallet.to_dict()["public_keys"],
+        "created_at": wallet.created_at,
+        "balance": genesis_chain.get_balance(wallet.address),
+        "security_level": genesis_chain.security_manager.security_level.name
+    }
+
+@app.get("/api/wallets/{wallet_id}/balance")
+async def get_wallet_balance(wallet_id: str):
+    """Get wallet balance"""
+    if wallet_id not in wallets:
+        raise HTTPException(status_code=404, detail="Wallet not found")
+    
+    wallet = wallets[wallet_id]
+    balance = genesis_chain.get_balance(wallet.address)
+    
+    return {
+        "wallet_id": wallet.id,
+        "address": wallet.address,
+        "balance": balance
+    }
+
+# Security Management API
+@app.get("/api/security/info")
+async def get_security_info():
+    """Get information about the current security configuration"""
+    security_level = genesis_chain.security_manager.security_level
+    
+    # Get active security layers
+    active_layers = []
+    for layer in genesis_chain.security_manager.layers:
+        if layer["enabled"]:
+            active_layers.append(layer["name"])
+    
+    # Get active verification layers
+    active_verifications = []
+    for layer in genesis_chain.security_manager.verification_layers:
+        if layer["enabled"]:
+            active_verifications.append(layer["name"])
+    
+    return {
+        "active_security_level": security_level.name,
+        "available_levels": [level.name for level in SecurityLevel],
+        "active_security_features": active_layers,
+        "active_verification_methods": active_verifications,
+        "quantum_resistance_status": {
+            "algorithms": ["FALCON", "SPHINCS+", "Kyber", "Dilithium"],
+            "security_bits": 256,
+            "status": "Enabled" if security_level.value >= SecurityLevel.STANDARD.value else "Disabled"
+        }
+    }
+
+@app.put("/api/security/level/{level}")
+async def update_security_level(level: str):
+    """Update the blockchain's security level"""
+    # Map string security level to enum
+    security_level_map = {
+        "STANDARD": SecurityLevel.STANDARD,
+        "HIGH": SecurityLevel.HIGH,
+        "VERY_HIGH": SecurityLevel.VERY_HIGH,
+        "QUANTUM": SecurityLevel.QUANTUM,
+        "PARANOID": SecurityLevel.PARANOID
+    }
+    
+    if level not in security_level_map:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Invalid security level. Valid levels are: {list(security_level_map.keys())}"
+        )
+    
+    # Update the security level
+    genesis_chain.update_security_level(security_level_map[level])
+    
+    # Save the updated chain state
+    await save_blockchain_state()
+    
+    return {
+        "message": f"Security level updated to {level}",
+        "enabled_features": [
+            layer["name"] for layer in genesis_chain.security_manager.layers
+            if layer["enabled"]
+        ]
+    }
+
+# Function to load wallets from database on startup
+async def load_wallets_from_db():
+    """Load all wallets from the database"""
+    global wallets
+    
+    wallet_docs = await db.wallets.find().to_list(length=None)
+    
+    for wallet_doc in wallet_docs:
+        try:
+            # Remove MongoDB _id field
+            if "_id" in wallet_doc:
+                del wallet_doc["_id"]
+            
+            # Create wallet from saved data
+            wallet = QuantumWallet.from_dict(wallet_doc)
+            
+            # Add to in-memory wallet store
+            wallets[wallet.id] = wallet
+            
+            logger.info(f"Loaded wallet: {wallet.name} ({wallet.id})")
+        except Exception as e:
+            logger.error(f"Error loading wallet: {str(e)}")
+    
+    logger.info(f"Loaded {len(wallets)} wallets from database")
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize the blockchain and load data on startup"""
+    global quantum_miner
+    
+    logger.info("Starting up GenesisChain Quantum-Resistant API")
+    
+    # Load blockchain state
+    await load_blockchain_state()
+    
+    # Load wallets
+    await load_wallets_from_db()
+    
+    # Create a default wallet if none exist
+    if not wallets:
+        default_wallet = create_wallet("Default Wallet")
+        wallets[default_wallet.id] = default_wallet
+        await db.wallets.insert_one(default_wallet.to_dict(include_private_keys=True))
+        logger.info(f"Created default wallet: {default_wallet.id}")
+    
+    # Initialize the miner with the first wallet
+    first_wallet_id = next(iter(wallets))
+    miner_address = wallets[first_wallet_id].address
+    quantum_miner = QuantumMiner(miner_address)
+    
+    logger.info(f"Initialization complete. Chain length: {len(genesis_chain.chain)}")
+
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    """Clean up on shutdown"""
+    # Save final blockchain state
+    await save_blockchain_state()
+    
+    # Stop the miner if running
+    if quantum_miner and quantum_miner.running:
+        quantum_miner.stop_mining()
+    
+    # Close the database connection
+    client.close()
+    
+    logger.info("Shutdown complete")
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize the blockchain and load state on startup"""
