@@ -106,18 +106,20 @@ body {
 
 /* Content Sections */
 .content {
-  background-color: white;
+  background-color: rgba(25, 25, 35, 0.8);
   border-radius: 10px;
   box-shadow: var(--card-shadow);
   padding: 2rem;
   margin-bottom: 2rem;
+  border: 1px solid #333;
 }
 
 h2 {
   font-family: var(--header-font);
-  color: var(--dark-color);
+  color: #e0e0e0;
   margin-bottom: 1.5rem;
   font-weight: 600;
+  text-shadow: var(--neon-glow);
   border-bottom: 2px solid var(--border-color);
   padding-bottom: 0.5rem;
 }
