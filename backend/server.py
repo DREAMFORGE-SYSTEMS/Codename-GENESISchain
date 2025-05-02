@@ -47,9 +47,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Import our quantum-resistant blockchain modules after database setup
-from .blockchain.blockchain import Blockchain, Block, Transaction, SecurityLevel
-from .blockchain.wallet import QuantumWallet, create_wallet, get_wallet_balance
-from .blockchain.mining import mine_block, calculate_hash, calculate_proof_of_work, QuantumMiner
+from blockchain.blockchain import Blockchain, Block, Transaction, SecurityLevel
+from blockchain.wallet import QuantumWallet, create_wallet, get_wallet_balance
+from blockchain.mining import mine_block, calculate_hash, calculate_proof_of_work, QuantumMiner
+from quantum_security import SecurityLevel, create_default_security_manager
 
 # API Models for request/response
 class TransactionRequest(BaseModel):
