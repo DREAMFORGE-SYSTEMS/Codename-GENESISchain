@@ -170,18 +170,34 @@ h3 {
 .hash {
   font-family: monospace;
   font-size: 0.85rem;
-  background-color: #f1f1f1;
+  background-color: rgba(40, 40, 60, 0.8);
+  color: #e0e0e0;
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   word-break: break-all;
+  border: 1px solid #444;
+}
+
+/* Three-Layer Architecture title styling */
+.architecture-title {
+  font-size: 2.8rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em;
+  text-align: center;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: var(--neon-glow);
+  margin-bottom: 2rem !important;
 }
 
 /* Transactions */
 .transaction-form {
-  background-color: var(--light-color);
+  background-color: rgba(25, 25, 35, 0.8);
   padding: 1.5rem;
   border-radius: 8px;
   margin-bottom: 2rem;
+  border: 1px solid #333;
 }
 
 .form-group {
