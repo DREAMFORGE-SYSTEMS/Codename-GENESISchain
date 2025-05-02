@@ -423,19 +423,31 @@ function ForgeInterface() {
                 <div className="forge-metrics">
                   <div className="metric-card">
                     <h4>Stability</h4>
-                    <div className="metric-value">{(forgeStatus.stability * 100).toFixed(2)}%</div>
+                    <div className="metric-value">
+                      {typeof displayForgeStatus.stability === 'number' 
+                        ? (displayForgeStatus.stability * 100).toFixed(2) 
+                        : '0.00'}%
+                    </div>
                   </div>
                   <div className="metric-card">
                     <h4>Efficiency</h4>
-                    <div className="metric-value">{(forgeStatus.efficiency * 100).toFixed(2)}%</div>
+                    <div className="metric-value">
+                      {typeof displayForgeStatus.efficiency === 'number' 
+                        ? (displayForgeStatus.efficiency * 100).toFixed(2) 
+                        : '0.00'}%
+                    </div>
                   </div>
                   <div className="metric-card">
                     <h4>Uptime</h4>
-                    <div className="metric-value">{forgeStatus.uptime.toFixed(2)} hrs</div>
+                    <div className="metric-value">
+                      {typeof displayForgeStatus.uptime === 'number' 
+                        ? displayForgeStatus.uptime.toFixed(2) 
+                        : '0.00'} hrs
+                    </div>
                   </div>
                   <div className="metric-card">
                     <h4>Alerts</h4>
-                    <div className="metric-value">{forgeStatus.alert_count}</div>
+                    <div className="metric-value">{displayForgeStatus.alert_count || 0}</div>
                   </div>
                 </div>
                 
