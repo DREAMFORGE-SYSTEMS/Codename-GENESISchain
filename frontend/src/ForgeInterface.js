@@ -454,18 +454,25 @@ function ForgeInterface() {
                 <div className="energy-distribution">
                   <h4>Energy Distribution</h4>
                   <div className="distribution-bars">
-                    {Object.entries(forgeStatus.layer_distribution).map(([layer, percentage]) => (
+                    {Object.entries(displayForgeStatus.layer_distribution || {}).map(([layer, percentage]) => (
                       <div key={layer} className="layer-distribution">
                         <div className="layer-name">{layer}</div>
                         <div className="distribution-bar-container">
                           <div 
                             className={`distribution-bar ${layer}`}
-                            style={{ width: `${percentage}%` }}
+                            style={{ width: `${typeof percentage === 'number' ? percentage : 0}%` }}
                           ></div>
                         </div>
-                        <div className="distribution-value">{percentage.toFixed(2)}%</div>
+                        <div className="distribution-value">
+                          {typeof percentage === 'number' ? percentage.toFixed(2) : '0.00'}%
+                        </div>
                       </div>
                     ))}
+                    {Object.keys(displayForgeStatus.layer_distribution || {}).length === 0 && (
+                      <div className="empty-distribution">
+                        <p>No energy distribution data available</p>
+                      </div>
+                    )}
                   </div>
                 </div>
                 
