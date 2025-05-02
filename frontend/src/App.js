@@ -290,6 +290,12 @@ function App() {
         >
           Security
         </button>
+        <button  
+          className={activeTab === "forge" ? "active" : ""}  
+          onClick={() => setActiveTab("forge")} 
+        > 
+          The Forge 
+        </button>
       </nav>
 
       <main className="content">
