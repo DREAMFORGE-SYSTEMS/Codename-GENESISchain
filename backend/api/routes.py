@@ -23,6 +23,9 @@ import time
 # Import the Forge router
 from api.forge_routes import forge_router
 
+# Import the Quantum-enhanced router
+from api.quantum_routes import quantum_router
+
 # Create routers for each layer
 genesis_router = APIRouter(prefix="/api/genesis", tags=["GenesisChain"])
 nexus_router = APIRouter(prefix="/api/nexus", tags=["NexusLayer"])
