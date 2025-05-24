@@ -20,9 +20,14 @@ from pydantic import BaseModel, Field
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Import quantum-enhanced modules
-from crypto.quantum_resistant import QuantumResistantCrypto
-from accountability.ledger import AccountabilityLedger, StatementMetadata, StatementRecord, TrustedSource
-from randomness.quantum_randomness import DeepThermalization, CertifiedRandomnessService, create_randomness_generator
+try:
+    from crypto.quantum_resistant import QuantumResistantCrypto
+    from accountability.ledger import AccountabilityLedger, StatementMetadata, StatementRecord, TrustedSource
+    from randomness.quantum_randomness import DeepThermalization, CertifiedRandomnessService, create_randomness_generator
+except ImportError:
+    from backend.crypto.quantum_resistant import QuantumResistantCrypto
+    from backend.accountability.ledger import AccountabilityLedger, StatementMetadata, StatementRecord, TrustedSource
+    from backend.randomness.quantum_randomness import DeepThermalization, CertifiedRandomnessService, create_randomness_generator
 
 # /backend
 ROOT_DIR = Path(__file__).parent
