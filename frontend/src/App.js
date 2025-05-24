@@ -733,6 +733,10 @@ function App() {
             <ForgeInterface />
           </div>
         )}
+        
+        {activeTab === "quantum" && (
+          <QuantumFeatures />
+        )}
       </main>
 
       <footer className="footer">
