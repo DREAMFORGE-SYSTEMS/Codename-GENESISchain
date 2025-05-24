@@ -6,18 +6,23 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import uvicorn
 import os
 import logging
-from pathlib import Path
 import hashlib
 import json
 import time
 import uuid
 import asyncio
 import sys
+from pathlib import Path
 from typing import List, Dict, Any, Optional, Union
 from pydantic import BaseModel, Field
 
 # Add the current directory to the Python path to allow relative imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Import quantum-enhanced modules
+from crypto.quantum_resistant import QuantumResistantCrypto
+from accountability.ledger import AccountabilityLedger, StatementMetadata, StatementRecord, TrustedSource
+from randomness.quantum_randomness import DeepThermalization, CertifiedRandomnessService, create_randomness_generator
 
 # /backend
 ROOT_DIR = Path(__file__).parent
