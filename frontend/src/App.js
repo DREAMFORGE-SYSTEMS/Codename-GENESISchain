@@ -300,6 +300,12 @@ function App() {
         > 
           The Forge 
         </button>
+        <button  
+          className={activeTab === "quantum" ? "active" : ""}  
+          onClick={() => setActiveTab("quantum")} 
+        > 
+          Quantum Features 
+        </button>
       </nav>
 
       <main className="content">
