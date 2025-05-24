@@ -6,10 +6,20 @@ from fastapi import APIRouter, HTTPException, Body, Query, Path
 from typing import Dict, List, Any, Optional
 import uuid
 import time
+import sys
+import os
 
-from crypto.quantum_resistant import QuantumResistantCrypto
-from accountability.ledger import AccountabilityLedger, StatementMetadata, StatementRecord, TrustedSource
-from randomness.quantum_randomness import create_randomness_generator
+# Add the backend directory to the Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+try:
+    from crypto.quantum_resistant import QuantumResistantCrypto
+    from accountability.ledger import AccountabilityLedger, StatementMetadata, StatementRecord, TrustedSource
+    from randomness.quantum_randomness import create_randomness_generator
+except ImportError:
+    from backend.crypto.quantum_resistant import QuantumResistantCrypto
+    from backend.accountability.ledger import AccountabilityLedger, StatementMetadata, StatementRecord, TrustedSource
+    from backend.randomness.quantum_randomness import create_randomness_generator
 
 # Create router
 quantum_router = APIRouter(prefix="/api/quantum", tags=["quantum"])
