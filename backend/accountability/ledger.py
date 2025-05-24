@@ -3,10 +3,17 @@ import uuid
 import json
 import hashlib
 import os
+import sys
 from typing import Dict, List, Any, Optional, Tuple
 from datetime import datetime
 
-from crypto.quantum_resistant import QuantumResistantCrypto
+# Add the parent directory to the Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+try:
+    from crypto.quantum_resistant import QuantumResistantCrypto
+except ImportError:
+    from backend.crypto.quantum_resistant import QuantumResistantCrypto
 
 class StatementMetadata:
     """
