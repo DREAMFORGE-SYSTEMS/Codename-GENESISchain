@@ -260,8 +260,9 @@ class OptimizedDeepThermalization:
             batch_requests: List of requests like [{"type": "int", "min": 1, "max": 100}, {"type": "bytes", "length": 32}]
             
         Returns:
-            List of generated values
+            List of generated values (bytes are base64 encoded for JSON serialization)
         """
+        import base64
         results = []
         
         # Pre-evolve state for the entire batch (optimization)
@@ -276,7 +277,9 @@ class OptimizedDeepThermalization:
             if request_type == "int":
                 result = self.generate_random_int_fast(request["min"], request["max"])
             elif request_type == "bytes":
-                result = self.generate_random_bytes(request["length"])
+                raw_bytes = self.generate_random_bytes(request["length"])
+                # Encode bytes as base64 for JSON serialization
+                result = base64.b64encode(raw_bytes).decode('utf-8')
             elif request_type == "float":
                 result = self.generate_random_float_fast()
             else:
