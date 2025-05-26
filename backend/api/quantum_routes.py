@@ -19,7 +19,7 @@ from crypto.optimized_quantum_resistant import (
 )
 from accountability.ledger import AccountabilityLedger
 
-router = APIRouter(prefix="/quantum", tags=["quantum"])
+router = APIRouter(prefix="/api/quantum", tags=["quantum"])
 
 # Global instances for optimized performance
 optimized_crypto = get_optimized_crypto()
