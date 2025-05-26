@@ -9,16 +9,16 @@ import base64
 import time
 
 # Import optimized implementations
-from ..randomness.optimized_quantum_randomness import (
+from randomness.optimized_quantum_randomness import (
     create_optimized_randomness_generator, 
     benchmark_performance as benchmark_randomness
 )
-from ..crypto.optimized_quantum_resistant import (
+from crypto.optimized_quantum_resistant import (
     get_optimized_crypto,
     benchmark_crypto_performance
 )
-from ..accountability.ledger import AccountabilityLedger
-from ..quantum_security.security_core import QuantumSecurityManager
+from accountability.ledger import AccountabilityLedger
+from quantum_security.security_core import QuantumSecurityManager
 
 router = APIRouter(prefix="/quantum", tags=["quantum"])
 
