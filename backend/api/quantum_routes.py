@@ -18,7 +18,6 @@ from crypto.optimized_quantum_resistant import (
     benchmark_crypto_performance
 )
 from accountability.ledger import AccountabilityLedger
-from quantum_security.security_core import QuantumSecurityManager
 
 router = APIRouter(prefix="/quantum", tags=["quantum"])
 
@@ -27,7 +26,6 @@ optimized_crypto = get_optimized_crypto()
 optimized_randomness = create_optimized_randomness_generator(certified=False)
 optimized_certified_randomness = create_optimized_randomness_generator(certified=True)
 accountability_ledger = AccountabilityLedger()
-security_manager = QuantumSecurityManager()
 
 # === PERFORMANCE-OPTIMIZED CRYPTOGRAPHY ENDPOINTS ===
 
