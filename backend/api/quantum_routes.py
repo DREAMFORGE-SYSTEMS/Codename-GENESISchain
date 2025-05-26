@@ -325,3 +325,6 @@ async def benchmark_randomness_optimized():
         raise HTTPException(status_code=500, detail=f"Randomness benchmark failed: {str(e)}")
 
 # === EXISTING ACCOUNTABILITY ENDPOINTS (UNCHANGED) ===
+
+# Export the router
+quantum_router = router
