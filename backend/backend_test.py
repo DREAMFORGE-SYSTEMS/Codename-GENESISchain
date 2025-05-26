@@ -519,5 +519,217 @@ class TestEnhancedQuantumCryptographyVerification:
         
         print("✅ Comprehensive security test PASSED - Enhanced verification is working correctly!")
 
+class TestCriticalQuantumCryptographySecurityFix:
+    """
+    CRITICAL TEST - Testing the COMPLETELY REWRITTEN quantum cryptography signature verification system.
+    This test verifies that the security fix works and properly rejects invalid signatures.
+    
+    Expected Results:
+    - ALL valid signatures should return {"is_valid": true}
+    - ALL invalid signatures should return {"is_valid": false}
+    """
+    
+    def setup_method(self):
+        """Setup before each test"""
+        self.base_url = BACKEND_URL
+        
+    def test_critical_valid_signature_tests(self):
+        """
+        Valid Signature Tests (should all be TRUE):
+        - Generate keypair and sign "test message 1"
+        - Verify with correct message, signature, and public key
+        - Test with 3 different valid messages to ensure consistency
+        """
+        print("\n=== CRITICAL TEST - Valid Signature Tests ===")
+        
+        valid_messages = [
+            "test message 1",
+            "test message 2", 
+            "test message 3"
+        ]
+        
+        valid_count = 0
+        
+        for i, message in enumerate(valid_messages):
+            print(f"\nValid Test {i+1}: Testing message: '{message}'")
+            
+            # Generate keypair
+            keypair_response = requests.post(f"{self.base_url}/api/quantum/crypto/generate-keypair")
+            assert keypair_response.status_code == 200
+            keypair = keypair_response.json()
+            
+            # Sign message
+            sign_payload = {
+                "message": message,
+                "private_key": keypair["private_key"]
+            }
+            sign_response = requests.post(f"{self.base_url}/api/quantum/crypto/sign", json=sign_payload)
+            assert sign_response.status_code == 200
+            signature_data = sign_response.json()
+            
+            # Verify signature (should be TRUE)
+            verify_payload = {
+                "message": message,
+                "signature": signature_data["signature"],
+                "public_key": keypair["public_key"]
+            }
+            verify_response = requests.post(f"{self.base_url}/api/quantum/crypto/verify", json=verify_payload)
+            assert verify_response.status_code == 200
+            verify_data = verify_response.json()
+            
+            print(f"  Result: {verify_data['is_valid']} (Expected: True)")
+            assert verify_data["is_valid"] is True, f"Valid signature should be accepted for message: {message}"
+            valid_count += 1
+            
+        print(f"\n✅ VALID SIGNATURE TESTS: {valid_count}/3 correctly accepted")
+        
+    def test_critical_invalid_signature_security_tests(self):
+        """
+        Invalid Signature Security Tests (should all be FALSE):
+        - Modified signature test: Generate valid signature, then change 1 character and verify (should be FALSE)
+        - Wrong public key test: Use signature with a different public key (should be FALSE) 
+        - Wrong message test: Use signature with different message (should be FALSE)
+        - Random signature test: Use completely random signature (should be FALSE)
+        """
+        print("\n=== CRITICAL TEST - Invalid Signature Security Tests ===")
+        
+        # Generate keypair and sign a test message
+        keypair_response = requests.post(f"{self.base_url}/api/quantum/crypto/generate-keypair")
+        assert keypair_response.status_code == 200
+        keypair = keypair_response.json()
+        
+        test_message = "test message 1"
+        sign_payload = {
+            "message": test_message,
+            "private_key": keypair["private_key"]
+        }
+        sign_response = requests.post(f"{self.base_url}/api/quantum/crypto/sign", json=sign_payload)
+        assert sign_response.status_code == 200
+        signature_data = sign_response.json()
+        original_signature = signature_data["signature"]
+        
+        security_tests = []
+        
+        # Test 1: Modified signature test (change 1 character)
+        print("\n1. Modified Signature Test:")
+        modified_signature = original_signature[:-1] + ('A' if original_signature[-1] != 'A' else 'B')
+        verify_payload = {
+            "message": test_message,
+            "signature": modified_signature,
+            "public_key": keypair["public_key"]
+        }
+        verify_response = requests.post(f"{self.base_url}/api/quantum/crypto/verify", json=verify_payload)
+        assert verify_response.status_code == 200
+        verify_data = verify_response.json()
+        print(f"   Result: {verify_data['is_valid']} (Expected: False)")
+        security_tests.append(("Modified signature", verify_data["is_valid"]))
+        
+        # Test 2: Wrong public key test
+        print("\n2. Wrong Public Key Test:")
+        # Generate another keypair to get a different public key
+        keypair2_response = requests.post(f"{self.base_url}/api/quantum/crypto/generate-keypair")
+        assert keypair2_response.status_code == 200
+        keypair2 = keypair2_response.json()
+        
+        verify_payload = {
+            "message": test_message,
+            "signature": original_signature,
+            "public_key": keypair2["public_key"]  # Different public key
+        }
+        verify_response = requests.post(f"{self.base_url}/api/quantum/crypto/verify", json=verify_payload)
+        assert verify_response.status_code == 200
+        verify_data = verify_response.json()
+        print(f"   Result: {verify_data['is_valid']} (Expected: False)")
+        security_tests.append(("Wrong public key", verify_data["is_valid"]))
+        
+        # Test 3: Wrong message test
+        print("\n3. Wrong Message Test:")
+        verify_payload = {
+            "message": "different message",  # Different message
+            "signature": original_signature,
+            "public_key": keypair["public_key"]
+        }
+        verify_response = requests.post(f"{self.base_url}/api/quantum/crypto/verify", json=verify_payload)
+        assert verify_response.status_code == 200
+        verify_data = verify_response.json()
+        print(f"   Result: {verify_data['is_valid']} (Expected: False)")
+        security_tests.append(("Wrong message", verify_data["is_valid"]))
+        
+        # Test 4: Random signature test
+        print("\n4. Random Signature Test:")
+        import os
+        import base64
+        random_sig = base64.b64encode(os.urandom(160)).decode('utf-8')  # 160 bytes as per new spec
+        verify_payload = {
+            "message": test_message,
+            "signature": random_sig,
+            "public_key": keypair["public_key"]
+        }
+        verify_response = requests.post(f"{self.base_url}/api/quantum/crypto/verify", json=verify_payload)
+        assert verify_response.status_code == 200
+        verify_data = verify_response.json()
+        print(f"   Result: {verify_data['is_valid']} (Expected: False)")
+        security_tests.append(("Random signature", verify_data["is_valid"]))
+        
+        # Analyze results
+        print(f"\n=== CRITICAL SECURITY TEST RESULTS ===")
+        rejected_count = 0
+        for test_name, is_valid in security_tests:
+            status = "✅ PASS (correctly rejected)" if not is_valid else "❌ FAIL (incorrectly accepted)"
+            print(f"  {test_name}: {status}")
+            if not is_valid:
+                rejected_count += 1
+                
+        print(f"\nSummary: {rejected_count}/{len(security_tests)} invalid signatures correctly rejected")
+        
+        # CRITICAL ASSERTION: ALL invalid signatures MUST be rejected
+        for test_name, is_valid in security_tests:
+            assert not is_valid, f"CRITICAL SECURITY FAILURE: Invalid signature test '{test_name}' should have been rejected but was accepted. This breaks quantum blockchain security!"
+            
+        print("✅ CRITICAL SECURITY TEST PASSED: All invalid signatures correctly rejected!")
+        
+    def test_critical_signature_structure_validation(self):
+        """
+        Test that the new signature structure is exactly 160 bytes (64+32+32+32)
+        and contains the verification challenge as specified.
+        """
+        print("\n=== CRITICAL TEST - Signature Structure Validation ===")
+        
+        # Generate keypair and sign a message
+        keypair_response = requests.post(f"{self.base_url}/api/quantum/crypto/generate-keypair")
+        assert keypair_response.status_code == 200
+        keypair = keypair_response.json()
+        
+        test_message = "test message for structure validation"
+        sign_payload = {
+            "message": test_message,
+            "private_key": keypair["private_key"]
+        }
+        sign_response = requests.post(f"{self.base_url}/api/quantum/crypto/sign", json=sign_payload)
+        assert sign_response.status_code == 200
+        signature_data = sign_response.json()
+        
+        # Decode and check signature structure
+        import base64
+        signature_bytes = base64.b64decode(signature_data["signature"])
+        
+        print(f"Signature length: {len(signature_bytes)} bytes (Expected: 160)")
+        assert len(signature_bytes) == 160, f"Signature should be exactly 160 bytes, got {len(signature_bytes)}"
+        
+        # Verify the signature works
+        verify_payload = {
+            "message": test_message,
+            "signature": signature_data["signature"],
+            "public_key": keypair["public_key"]
+        }
+        verify_response = requests.post(f"{self.base_url}/api/quantum/crypto/verify", json=verify_payload)
+        assert verify_response.status_code == 200
+        verify_data = verify_response.json()
+        
+        print(f"Signature verification: {verify_data['is_valid']} (Expected: True)")
+        assert verify_data["is_valid"] is True, "Valid signature with correct structure should be accepted"
+        
+        print("✅ SIGNATURE STRUCTURE TEST PASSED: 160-byte signature structure working correctly!")
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
